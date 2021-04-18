@@ -12,3 +12,5 @@ let productionRules = {};
 
 let first = {};
 let follow = {};
+
+let states;

@@ -191,12 +191,15 @@ body {
 .parse-table {
     border-collapse: separate;
     border-spacing: 0;
-    border-width: 1px;
+    border-width: 2px;
     border-style: solid;
+    border-radius: 15px;
     border-color: #444444;
     margin: 15px;
     width: calc(100% - 32px);
     table-layout: fixed;
+    text-align: justify;
+    background-color: ghostwhite;
 
 }
 
@@ -208,6 +211,22 @@ body {
 .headerCell {
     border-bottom-color: black;
     border-bottom-width: 2px;
+}
+
+.leftCell {
+    border-left-width: 0;
+}
+
+.rightCell {
+    border-right-width: 0;
+}
+
+.topCell {
+    border-top-width: 0;
+}
+
+.bottomCell {
+    border-bottom-width: 0;
 }
 
 .symbol-text{

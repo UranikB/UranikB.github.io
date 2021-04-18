@@ -21,12 +21,12 @@ function parseGrammar() {
         console.timeEnd("Follow");
         showFirst();
         showFollow();
-        createTable();
+        generateStates();
+        createStateTable();
+        createParseTable();
     } catch (e) {
         document.getElementById("parse-grammar-button").style.backgroundColor = "red";
     }
-    logging = "ALL";
-   generateStates();
 }
 
 function getInput() {

@@ -34,8 +34,58 @@ function deleteField(button){
     field.parentElement.removeChild(field);
 }
 
-function createTable(){
+function createStateTable(){
     let div = document.getElementById("third-row");
+    let table = document.createElement('TABLE');
+    table.classList.add("parse-table");
+
+    let tableHead = document.createElement('TR');
+    let tableBody = document.createElement('TR');
+    table.appendChild(tableHead);
+    table.appendChild(tableBody);
+
+    let state = document.createElement('TD');
+    let elements = document.createElement('TD');
+    state.appendChild(document.createTextNode("Zustand"));
+    elements.appendChild(document.createTextNode("Elemente"));
+    state.classList.add("thickBorderCell");
+    state.classList.add("headerCell");
+    state.classList.add("leftCell");
+    state.classList.add("topCell");
+    elements.classList.add("thickBorderCell");
+    elements.classList.add("leftCell");
+    elements.classList.add("bottomCell");
+    tableHead.appendChild(state);
+    tableBody.appendChild(elements);
+
+    for (let i = 0; i < states.collections.length; i++) {
+        let stateCell = document.createElement('TD');
+        let spanNode = document.createElement('SPAN');
+        stateCell.classList.add("headerCell");
+        stateCell.classList.add("topCell");
+        if(i === 0) stateCell.classList.add("leftCell");
+        if(i === states.collections.length - 1) stateCell.classList.add("rightCell");
+        spanNode.innerHTML = "I<sub>" + i + "</sub>";
+        stateCell.appendChild(spanNode);
+        tableHead.appendChild(stateCell);
+
+        let elementsCell = document.createElement('TD');
+        elementsCell.classList.add("bottomCell");
+        if(i === 0) elementsCell.classList.add("leftCell");
+        if(i === states.collections.length - 1) elementsCell.classList.add("rightCell");
+        let elementSpanNode = document.createElement('SPAN');
+        elementSpanNode.innerHTML = states.collections[i].elements[0];
+        for (let j = 1; j < states.collections[i].elements.length; j++) {
+            elementSpanNode.innerHTML += "<br>" + states.collections[i].elements[j];
+        }
+        elementsCell.appendChild(elementSpanNode);
+        tableBody.appendChild(elementsCell);
+    }
+    div.appendChild(table);
+}
+
+function createParseTable(){
+    let div = document.getElementById("fourth-row");
 
     let table = document.createElement('TABLE');
     table.classList.add("parse-table");
@@ -50,7 +100,12 @@ function createTable(){
     action.colSpan = input[0].length;
     jump.colSpan = input[1].length;
     emptyCell.classList.add("thickBorderCell");
+    emptyCell.classList.add("topCell");
+    emptyCell.classList.add("leftCell");
     action.classList.add("thickBorderCell");
+    action.classList.add("topCell");
+    jump.classList.add("topCell");
+    jump.classList.add("rightCell");
     action.appendChild(document.createTextNode("Aktion"));
     jump.appendChild(document.createTextNode("Sprung"));
     firstTableHead.appendChild(emptyCell);
@@ -64,6 +119,7 @@ function createTable(){
     state.appendChild(document.createTextNode("Zustand"));
     state.classList.add("thickBorderCell");
     state.classList.add("headerCell");
+    state.classList.add("leftCell");
     secondTableHead.appendChild(state);
     for (let i = 0; i < input[0].length; i++) {
         let nonTerminalCell = document.createElement('TD');
@@ -76,13 +132,14 @@ function createTable(){
         let terminalCell = document.createElement('TD');
         terminalCell.appendChild(document.createTextNode(input[1][i]));
         terminalCell.classList.add("headerCell");
+        if(i === input[1].length - 1) terminalCell.classList.add("rightCell");
         secondTableHead.appendChild(terminalCell);
     }
 
 
     let tableBody = document.createElement('TBODY');
     table.appendChild(tableBody);
-    for (let i = 0; i < 10; i++) {                             //Example for ten states
+    for (let i = 0; i < states.collections.length; i++) {                             //Example for ten states
         let tableRow = document.createElement('TR');
         tableBody.appendChild(tableRow);
         for (let j = 0; j <= input[0].length + input[1].length; j++) {
@@ -91,10 +148,16 @@ function createTable(){
                 let spanNode = document.createElement('SPAN');
                 spanNode.innerHTML = "I<sub>" + i + "</sub>";
                 cell.appendChild(spanNode);
+                cell.classList.add("leftCell");
+            }
+            else {
+                cell.contentEditable = "true";
             }
             if(j === 0 || j === input[0].length){
                 cell.classList.add("thickBorderCell");
             }
+            if(j === input[0].length + input[1].length) cell.classList.add("rightCell");
+            if(i === states.collections.length - 1) cell.classList.add("bottomCell");
             tableRow.appendChild(cell);
         }
     }

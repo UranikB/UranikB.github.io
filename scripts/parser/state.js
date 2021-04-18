@@ -218,7 +218,7 @@ function generateStates() {
     closure(collection);
 
     log("   Initial Collection: ", collection);
-    let states = new Collections([collection]);
+    states = new Collections([collection]);
     let changed = true;
 
     let itr = 1;
