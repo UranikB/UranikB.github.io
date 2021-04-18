@@ -1,0 +1,273 @@
+body {
+    background-color: lightsteelblue;
+    font-family: "Helvetica Neue", serif;
+    margin: 0;
+}
+
+.container {
+    min-width: 1200px;
+}
+
+#menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #29333b;
+}
+
+.menubar {
+    float: left;
+}
+
+.menubarentry {
+    display: block;
+    color: #fff;
+    text-align: center;
+    padding: 15px 15px;
+}
+
+.menubarentry:hover {
+    background-color: steelblue;
+}
+
+#first-row {
+    height: 230px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.card {
+    transition: transform .2s;
+    position: relative;
+    width: 100%;
+    height: 200px;
+    margin: 15px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: #777 3px 3px 3px;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+.card .title {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card .content {
+    width: 100%;
+    padding: 5px;
+    margin-left: 10px;
+    box-sizing: border-box;
+}
+
+#second-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+#input-form{
+    margin: 15px;
+    width: calc(33.5% - 30px)
+}
+
+#input-form > * {
+    display: block;
+    margin-top: 15px;
+}
+
+#disabled-start-field > button{
+    visibility: hidden;
+}
+
+#disabled-start-field > input{
+    background-color: lightgray;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
+    box-shadow: none;
+}
+
+.input-field > *:first-child {
+    margin-left: 0;
+}
+
+.input-field > * {
+    margin-left: 10px;
+}
+
+.input-field > input {
+    font-size: 15px;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
+    box-shadow: #777 2px 2px 3px;
+}
+
+.nonterminal {
+    width: calc(calc(100% - 100px)/2);
+    padding-left: 10px;
+}
+
+.production-rule {
+    padding-left: 10px;
+    width: calc(calc(100% - 100px)/2);
+}
+
+.wide-button {
+    font-size: 20px;
+    background-color: white;
+    width: 74px;
+    height: 32px;
+    border-radius: 5px;
+    border: none;
+    box-shadow: #777 2px 2px 3px;
+}
+
+.button {
+    font-size: 20px;
+    background-color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 5px;
+    border: none;
+    box-shadow: #777 2px 2px 3px;
+}
+
+.button > img {
+    margin-top: 3px;
+    width: 75%;
+}
+
+#first-container{
+    margin: 15px;
+    width: calc(33.5% - 30px);
+    visibility: collapse;
+}
+
+#follow-container{
+    margin: 15px;
+    width: calc(33.5% - 30px);
+    visibility: collapse;
+}
+
+
+#table-container {
+    transition: transform .2s;
+    visibility: visible;
+    margin: 15px;
+}
+
+#table-container:hover {
+    transform: scale(1.01);
+}
+
+#table {
+    height: 200px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: #777 3px 3px 3px;
+}
+
+.th, td {
+    padding: 5px;
+    text-align: left;
+}
+
+.table, td, th {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #444444;
+}
+
+.parse-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #444444;
+    margin: 15px;
+    width: calc(100% - 32px);
+    table-layout: fixed;
+
+}
+
+.thickBorderCell {
+    border-right-color: black;
+    border-right-width: 2px;
+}
+
+.headerCell {
+    border-bottom-color: black;
+    border-bottom-width: 2px;
+}
+
+.symbol-text{
+    font-family: monospace;
+    font-size: 17px;
+}
+
+#first-form{
+    margin: 15px;
+}
+
+#first-form > * {
+    display: block;
+    margin-top: 15px;
+}
+
+.first-field > *:first-child {
+    margin-left: 0;
+}
+
+.first-field > * {
+    margin-left: 10px;
+}
+
+.first-field > input {
+    background-color: white;
+    padding-left: 10px;
+    width: calc(50% - 50px);
+    font-size: 15px;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
+    box-shadow: #777 2px 2px 3px;
+}
+
+#follow-form{
+    margin: 15px;
+}
+
+#follow-form > * {
+    display: block;
+    margin-top: 15px;
+}
+
+.follow-field > *:first-child {
+    margin-left: 0;
+}
+
+.follow-field > * {
+    margin-left: 10px;
+}
+
+
+.follow-field > input {
+    background-color: white;
+    padding-left: 10px;
+    width: calc(50% - 50px);
+    font-size: 15px;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
+    box-shadow: #777 2px 2px 3px;
+}
