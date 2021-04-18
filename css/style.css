@@ -113,13 +113,13 @@ body {
 }
 
 .nonterminal {
-    width: calc(calc(100% - 100px)/2);
+    width: calc(calc(100% - 102px)/2);
     padding-left: 10px;
 }
 
 .production-rule {
     padding-left: 10px;
-    width: calc(calc(100% - 100px)/2);
+    width: calc(calc(100% - 102px)/2);
 }
 
 .wide-button {
@@ -159,48 +159,39 @@ body {
     visibility: collapse;
 }
 
-
-#table-container {
-    transition: transform .2s;
-    visibility: visible;
-    margin: 15px;
-}
-
-#table-container:hover {
-    transform: scale(1.01);
-}
-
-#table {
-    height: 200px;
-    background: #fff;
-    border-radius: 15px;
-    box-shadow: #777 3px 3px 3px;
-}
-
-.th, td {
+td {
     padding: 5px;
-    text-align: left;
-}
 
-.table, td, th {
     border-width: 1px;
     border-style: solid;
     border-color: #444444;
+
+    text-align: left;
+    white-space: nowrap;
 }
 
-.parse-table {
+#parse-table-container{
+    margin: 15px;
+}
+
+#state-table-container{
+    margin: 15px;
+    overflow: scroll;
+}
+
+table {
+    width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     border-width: 2px;
     border-style: solid;
     border-radius: 15px;
     border-color: #444444;
-    margin: 15px;
-    width: calc(100% - 32px);
-    table-layout: fixed;
-    text-align: justify;
+
     background-color: ghostwhite;
 
+    table-layout: auto;
+    text-align: justify;
 }
 
 .thickBorderCell {
