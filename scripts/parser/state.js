@@ -1,18 +1,36 @@
+// class Jump {
+//     constructor(collection, symbol) {
+//         if(symbol === undefined || collection === undefined){
+//             throw "Invalid element";
+//         }
+//         this.symbol = symbol;
+//         this.collection = collection;
+//     }
+//
+//     equals(jump){
+//         return this.symbol === jump.symbol && this.collection === jump.collection;
+//     }
+// }
+
 class Element {
-    constructor(nonTerminalSymbol, rule, index) {
+    constructor(nonTerminalSymbol, rule, index, point) {
         if(nonTerminalSymbol === undefined){
             throw "Invalid element";
         }
         if(rule === undefined){
-            rule = [];
+            throw "Invalid element";
         }
         if(index === undefined){
-            index = 0;
+            throw "Invalid element";
         }
-        if(index <= rule.length) {
+        if(point === undefined){
+            point = 0;
+        }
+        if(point <= rule.length) {
             this.nonTerminalSymbol = nonTerminalSymbol;
             this.rule = rule;
             this.index = index;
+            this.point = point;
         } else {
             throw "Invalid element";
         }
@@ -21,7 +39,7 @@ class Element {
     equals(element){
         let equals = false;
         if(element.nonTerminalSymbol === this.nonTerminalSymbol
-            && element.index === this.index
+            && element.point === this.point
             && element.rule.length === this.rule.length) {
             equals = true;
             for (let i = 0; i < this.rule.length; i++) {
@@ -35,31 +53,31 @@ class Element {
     }
 
     isNotFinished(){
-        return (this.index < this.rule.length);
+        return (this.point < this.rule.length);
     }
 
     followingSymbol() {
         if (this.isNotFinished()) {
-            return this.rule[this.index];
+            return this.rule[this.point];
         }
     }
 }
 
 Element.prototype.toString = function elementToString() {
-    let ret = this.nonTerminalSymbol + " -> ";
-    if(this.index === 0){
+    let ret = this.nonTerminalSymbol + " &#8594; ";
+    if(this.point === 0){
         ret += ". " + this.rule[0];
     } else {
         ret += this.rule[0];
     }
     for (let i = 1; i < this.rule.length; i++) {
-        if(i === this.index){
+        if(i === this.point){
             ret += (" . " + this.rule[i]);
         } else {
             ret += (" " + this.rule[i]);
         }
     }
-    if(this.index === this.rule.length){
+    if(this.point === this.rule.length){
         ret += " .";
     }
     return ret;
@@ -70,12 +88,42 @@ class Collection {
         if(elements === undefined){
             elements = [];
         }
+        //this.jumps = [];
+        this.jumps = {};
+        this.reduction = [];
         this.elements = elements;
         this.isStart = origin === undefined || symbol === undefined;
         if(!this.isStart){
+            //this.origin = new Jump(origin, symbol)
             this.origin = origin;
             this.symbol = symbol;
         }
+    }
+
+    addReduction(symbol, productionIndex){
+        if(this.reduction.length === 0){
+            this.reduction = [symbol, productionIndex];
+        } else {
+            throw "Multiple Reductions by " + this;
+        }
+    }
+
+    addJump(collection, symbol){
+        // let jump = new Jump(collection, symbol);
+        // for (let i = 0; i < this.elements.length ; i++) {
+        //     if(jump.equals(this.jumps[i])){
+        //         return false;
+        //     }
+        // }
+        // this.jumps.push(jump);
+        // return true;
+        if(this.jumps[symbol] === undefined){
+            this.jumps[symbol] = collection;
+            return true;
+        } else if (this.jumps[symbol] !== collection) {
+            throw "Multiple Collections by jump through symbol from " + this;
+        }
+        return false;
     }
 
     has(element){
@@ -98,12 +146,6 @@ class Collection {
     }
 
     equals(collection){
-        // if(this.isStart !== collection.isStart) return false;
-        // if(!this.isStart){
-        //     if (this.origin !== collection.origin || this.symbol !== collection.symbol){
-        //         return false;
-        //     }
-        // }
         for (let i = 0; i < this.elements.length; i++) {
             if(!collection.has(this.elements[i])){
                 return false;
@@ -132,22 +174,38 @@ class Collections {
     }
 
     has(collection){
-        let isIncluded = false;
+        let index = -1;
         for (let i = 0; i < this.collections.length ; i++) {
             if(this.collections[i].equals(collection)){
-                isIncluded = true;
+                index = i;
                 break;
             }
         }
-        return isIncluded;
+        return index;
     }
 
     append(collection){
-        if(!(this.has(collection))){
+        let index = this.has(collection);
+
+        if(index === -1){
             this.collections.push(collection);
-            return true;
+            return this.collections.length - 1;
         }
-        return false;
+        return index;
+    }
+
+    addStateAndJump(collection, origin, symbol) {
+        let prevCount = this.collections.length - 1;
+        let index = this.append(collection);
+        let changed = false;
+
+        if (index > prevCount) {
+            changed = true;
+        }
+        if(this.collections[origin].addJump(index, symbol)){
+            changed = true;
+        }
+        return changed;
     }
 }
 
@@ -170,8 +228,8 @@ function closure(collection) {
                 log("                           Current collection: " + collection.elements[i]);
                 if (isNT(nextSymbol)) {
                     log("                               " + nextSymbol + " is nonTerminal");
-                    for (let j = 0; j < productionRules[nextSymbol].length; j++) {
-                        let element = new Element(nextSymbol, productionRules[nextSymbol][j]);
+                    for (let j = 0; j < productionRules.of(nextSymbol).length; j++) {
+                        let element = new Element(nextSymbol, productionRules.of(nextSymbol)[j], productionRules.symbolToProduction[nextSymbol][j]);
                         log("                               Current element: " + element);
                         if (collection.append(element)) {
                             log("                               Added current element to: " + collection);
@@ -201,7 +259,7 @@ function jump(collection, origin, symbol){
             log("                       Current collection: " + collection.elements[i]);
             if (collection.elements[i].followingSymbol() === symbol) {
                 log("                       Found symbol: " + symbol + " after \'.\' in: " + collection.elements[i]);
-                let element = new Element(collection.elements[i].nonTerminalSymbol, collection.elements[i].rule, collection.elements[i].index + 1);
+                let element = new Element(collection.elements[i].nonTerminalSymbol, collection.elements[i].rule, collection.elements[i].index, collection.elements[i].point + 1);
                 if (jumps.append(element)) log("                       Added: " + element);
             }
         } else {
@@ -211,7 +269,7 @@ function jump(collection, origin, symbol){
     return closure(jumps);
 }
 
-function generateStates() {
+function generateStatesAndCalcJumps() {
     log("Generating States:");
     let startingElement = new Element(STARTSYMBOL, STARTPRODUCTION, 0);
     let collection = new Collection([startingElement]);
@@ -235,12 +293,12 @@ function generateStates() {
                     log("               Following Symbol: " + nextSymbol);
                     let collection = jump(states.collections[i], i, nextSymbol);
                     log("               Returned Collection: " + collection);
-                        if(states.append(collection)){
-                            log("               Appended Collection to states");
-                            changed = true;
-                        } else {
-                            log("               Collection already contained");
-                        }
+                    if(states.addStateAndJump(collection, i, nextSymbol)){
+                        log("               Appended Collection to states");
+                        changed = true;
+                    } else {
+                        log("               Collection already contained");
+                    }
                 } else {
                     log("               Element is finished");
                 }
@@ -248,5 +306,17 @@ function generateStates() {
         }
         itr++;
     }
-    console.log("Final States: " + states);
+    log("Final States: " + states);
+}
+
+function calcReductions() {
+    log("Calculating Reductions:");
+    for (let i = 0; i < states.collections.length; i++) {
+        log("       Current state: " + states.collections[i]);
+        for (let j = 0; j < states.collections[i].elements.length; j++) {
+            if (!(states.collections[i].elements[j].isNotFinished())) {
+                states.collections[i].addReduction(states.collections[i].elements[j].nonTerminalSymbol, states.collections[i].elements[j].index)
+            }
+        }
+    }
 }

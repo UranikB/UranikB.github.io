@@ -1,16 +1,45 @@
-
-/**
- * @param terminalSymbols: Array of all terminal-symbols represented by uppercase letters
- * @param nonTerminalSymbols: Array of all nonterminal-symbols represented as uppercase letters
- */
-function initFirsts(terminalSymbols, nonTerminalSymbols){
-    for(let i = 0; i < terminalSymbols.length; i++){
-        first[terminalSymbols[i]] = [terminalSymbols[i]];
+class FirstSet {
+    constructor(terminalSymbols, nonTerminalSymbols) {
+        if(terminalSymbols === undefined) terminalSymbols = new Terminals();
+        if(nonTerminalSymbols === undefined) nonTerminalSymbols = new NonTerminals();
+        for(let i = 0; i < terminalSymbols.symbols.length; i++){
+            this[terminalSymbols.symbols[i]] = [terminalSymbols.symbols[i]];
+        }
+        for(let i = 0; i < nonTerminalSymbols.symbols.length; i++){
+            this[nonTerminalSymbols.symbols[i]] = [];
+        }
     }
-    for(let i = 0; i < nonTerminalSymbols.length; i++){
-        first[nonTerminalSymbols[i]] = [];
+
+    appendToFirst(position, newSymbol){
+        if(!this[position].includes(newSymbol)){
+            this[position].push(newSymbol);
+            return true;
+        }
+        return false;
+    }
+
+
+
+    equalsFirst(correctSymbol, inputSet){
+        let equal = true;
+        for (let i = 0; i < this[correctSymbol].length; i++) {
+            if(!inputSet.includes(this[correctSymbol][i])){
+                equal = false;
+                break;
+            }
+        }
+        if(equal){
+            for (let i = 0; i < inputSet.length; i++) {
+                if(!this[correctSymbol].includes(inputSet[i])){
+                    equal = false;
+                    break;
+                }
+            }
+        }
+        return equal;
     }
 }
+
 
 /**
  * @param terminalSymbols: Array of all terminal-symbols represented by uppercase letters
@@ -19,19 +48,18 @@ function initFirsts(terminalSymbols, nonTerminalSymbols){
  * These production rules are stored as strings
  */
 function generateFirsts(terminalSymbols, nonTerminalSymbols, productionRules) {
-    initFirsts(terminalSymbols, nonTerminalSymbols);
     let changed = true;
     let i = 1;
     while(changed){
         log(i + ". iteration");
         changed = false;
-        for(let i = 0; i < nonTerminalSymbols.length; i++){
-            log("Next symbol: " + nonTerminalSymbols[i]);
-            if(generateFirstOfNT(nonTerminalSymbols[i], productionRules)){
+        for(let i = 0; i < nonTerminalSymbols.symbols.length; i++){
+            log("Next symbol: " + nonTerminalSymbols.symbols[i]);
+            if(generateFirstOfNT(nonTerminalSymbols.symbols[i], productionRules)){
                 changed = true;
-                log(nonTerminalSymbols[i] + ":    Changes detected");
+                log(nonTerminalSymbols.symbols[i] + ":    Changes detected");
             } else {
-                log(nonTerminalSymbols[i] + ":    No changes detected");
+                log(nonTerminalSymbols.symbols[i] + ":    No changes detected");
             }
         }
         if(changed) log("Another iteration needed because of changes");
@@ -48,11 +76,11 @@ function generateFirsts(terminalSymbols, nonTerminalSymbols, productionRules) {
  */
 function generateFirstOfNT(nonTerminal, productionRules) {
     let changed = false;
-    log(nonTerminal + ":    Rules: " + productionRules[nonTerminal]);
-    for(let i = 0; i < productionRules[nonTerminal].length; i++){
-        log(nonTerminal + ":        Next Rule: " + productionRules[nonTerminal][i]);
-        if(productionRules[nonTerminal][i] === EMPTY){
-            if(append(EMPTY, first[nonTerminal])){
+    log(nonTerminal + ":    Rules: " + productionRules.of(nonTerminal));
+    for(let i = 0; i < productionRules.of(nonTerminal).length; i++){
+        log(nonTerminal + ":        Next Rule: " + productionRules.of(nonTerminal)[i]);
+        if(productionRules.of(nonTerminal)[i] === EMPTY){
+            if(first.appendToFirst(nonTerminal, EMPTY)){
                 log(nonTerminal + ":            Adding EMPTY");
                 changed = true;
             } else {
@@ -60,23 +88,23 @@ function generateFirstOfNT(nonTerminal, productionRules) {
             }
         } else {
             log(nonTerminal + ":        Current First: " + first[nonTerminal]);
-            for (let j = 0; j < productionRules[nonTerminal][i].length; j++) {
-                log(nonTerminal + ":            Next symbol: " + productionRules[nonTerminal][i][j]);
-                log(nonTerminal + ":            First of " + productionRules[nonTerminal][i][j] + ": " + first[productionRules[nonTerminal][i][j]]);
-                for (let k = 0; k < first[productionRules[nonTerminal][i][j]].length; k++) {
-                    if(!(first[productionRules[nonTerminal][i][j]][k] === EMPTY)) {
-                        if (append(first[productionRules[nonTerminal][i][j]][k], first[nonTerminal])) {
-                            log(nonTerminal + ":                Adding: " + first[productionRules[nonTerminal][i][j]][k]);
+            for (let j = 0; j < productionRules.of(nonTerminal)[i].length; j++) {
+                log(nonTerminal + ":            Next symbol: " + productionRules.of(nonTerminal)[i][j]);
+                log(nonTerminal + ":            First of " + productionRules.of(nonTerminal)[i][j] + ": " + first[productionRules.of(nonTerminal)[i][j]]);
+                for (let k = 0; k < first[productionRules.of(nonTerminal)[i][j]].length; k++) {
+                    if(!(first[productionRules.of(nonTerminal)[i][j]][k] === EMPTY)) {
+                        if (first.appendToFirst(nonTerminal, first[productionRules.of(nonTerminal)[i][j]][k])) {
+                            log(nonTerminal + ":                Adding: " + first[productionRules.of(nonTerminal)[i][j]][k]);
                             changed = true;
                         } else {
-                            log(nonTerminal + ":                " + first[productionRules[nonTerminal][i][j]][k] + " already included");
+                            log(nonTerminal + ":                " + first[productionRules.of(nonTerminal)[i][j]][k] + " already included");
                         }
                     }
                 }
-                if (first[productionRules[nonTerminal][i][j]].includes(EMPTY)) {
-                    if ((j + 1) === productionRules[nonTerminal][i].length) {
+                if (first[productionRules.of(nonTerminal)[i][j]].includes(EMPTY)) {
+                    if ((j + 1) === productionRules.of(nonTerminal)[i].length) {
                         log(nonTerminal + ":                First of last symbol contains EMPTY");
-                        if (append(EMPTY, first[nonTerminal])) {
+                        if (first.appendToFirst(nonTerminal, EMPTY)) {
                             log(nonTerminal + ":                    Adding EMPTY");
                             changed = true;
                         } else {

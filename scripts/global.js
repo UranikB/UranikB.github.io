@@ -3,14 +3,14 @@ let logging = "NONE";
 
 
 let EMPTY = "-";
-let STARTSYMBOL = "X";
+let STARTSYMBOL = "S\'";
 let STARTPRODUCTION = ["S"];
 
-let terminals = [];
-let nonTerminals = [];
-let productionRules = {};
+let terminals;
+let nonTerminals;
+let productionRules;
 
-let first = {};
-let follow = {};
+let first;
+let follow;
 
 let states;

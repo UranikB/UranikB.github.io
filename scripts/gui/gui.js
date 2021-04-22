@@ -35,21 +35,22 @@ function deleteField(button){
 }
 
 function hideAll(){
-    terminals = [];
-    nonTerminals = [];
-    productionRules = {};
-    first = {};
-    follow = {};
+    terminals = new Terminals();
+    nonTerminals = new NonTerminals();
+    productionRules = new Rules();
+    first = new FirstSet();
+    follow = new FollowSet();
 
     document.getElementById("parse-grammar-button").style.backgroundColor = "white";
 
     let nts = document.getElementsByClassName("nonterminal");
     for (let i = 1; i < nts.length; i++) {
-        nts[i].style.backgroundColor = "white";
+        nts[i].style.backgroundColor = "ghostwhite";
     }
 
     document.getElementById("first-container").style.visibility = "collapse";
     document.getElementById("follow-container").style.visibility = "collapse";
+    document.getElementById("third-row").style.visibility = "collapse";
     const stateTable = document.getElementById("state-table-container");
     const parseTable = document.getElementById("parse-table-container");
     stateTable.innerHTML = "";
@@ -57,14 +58,15 @@ function hideAll(){
 }
 
 function resetAll(){
-    terminals = [];
-    nonTerminals = [];
-    productionRules = {};
-    first = {};
-    follow = {};
+    terminals = new Terminals();
+    nonTerminals = new NonTerminals();
+    productionRules = new Rules();
+    first = new FirstSet();
+    follow = new FollowSet();
 
     document.getElementById("first-container").style.visibility = "collapse";
     document.getElementById("follow-container").style.visibility = "collapse";
+    document.getElementById("third-row").style.visibility = "collapse";
     const container = document.getElementById("input-form");
     container.innerHTML = "<div class=\"title\"><h3>Eingabe</h3>" +
         "                <button class=\"wide-button\" id=\"parse-grammar-button\" onclick=\"parseGrammar()\">\n" +

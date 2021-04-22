@@ -1,7 +1,7 @@
 function correctAllFirsts(){
-    for (let i = 0; i < nonTerminals.length; i++) {
-        if(nonTerminals[i] !== STARTSYMBOL && nonTerminals[i] !== EMPTY){
-            correctFirst(nonTerminals[i]);
+    for (let i = 0; i < nonTerminals.symbols.length; i++) {
+        if(nonTerminals.symbols[i] !== STARTSYMBOL && nonTerminals.symbols[i] !== EMPTY){
+            correctFirst(nonTerminals.symbols[i]);
         }
 
     }
@@ -18,18 +18,30 @@ function correctFirst(nonTerminalSymbol){
     }
     output.value = result;
 
-    let inputArray = [];
+    let counter = 0;
     for (let i = 0; i < input.value.length; i++) {
-        if(input.value[i] !== "{"
-            && input.value[i] !== "}"
-            && input.value[i] !== ","
-            && input.value[i] !== ";"
-            && input.value[i] !== " "){
-            inputArray.push(input.value[i]);
+        if(input.value[i] === ",") counter++;
+        else if(input.value[i] === ";") counter--;
+    }
+    //input = input.value.replace(/(counter<=0)?";":","/g, "");
+    //let inputSet = input.value.replace(/[sSrR1234567890]/g, "").split(" ");
+
+
+    let inputArray;
+    let commaCounter = 0;
+    for (let i = 0; i < input.value.length; i++) {
+        if (input.value[i] === "{" || input.value[i] === "}") {
+            input.value[i] = "";
         }
+        if(input.value[i] === ",") commaCounter++;
+        if(input.value[i] === ";") commaCounter--;
     }
 
-    if(compareArrays(inputArray, first[nonTerminalSymbol])){
+    if(commaCounter > 0) inputArray = input.value.split(", ");
+    else if (commaCounter < 0) inputArray = input.value.split("; ");
+    else inputArray = input.value.split(" ");
+
+    if(first.equalsFirst(nonTerminalSymbol, inputArray)){
         output.style.color = "green";
     }
     else{
@@ -39,14 +51,14 @@ function correctFirst(nonTerminalSymbol){
 }
 
 function correctAllFollows(){
-    for (let i = 0; i < nonTerminals.length; i++) {
-        if(nonTerminals[i] !== STARTSYMBOL && nonTerminals[i] !== EMPTY){
-            correctFollow(nonTerminals[i]);
+    for (let i = 0; i < nonTerminals.symbols.length; i++) {
+        if(nonTerminals.symbols[i] !== STARTSYMBOL && nonTerminals.symbols[i] !== EMPTY){
+            correctFollow(nonTerminals.symbols[i]);
         }
     }
-    for (let i = 0; i < terminals.length; i++) {
-        if(terminals[i] !== STARTSYMBOL && terminals[i] !== EMPTY){
-            correctFollow(terminals[i]);
+    for (let i = 0; i < terminals.symbols.length; i++) {
+        if(terminals.symbols[i] !== STARTSYMBOL && terminals.symbols[i] !== EMPTY){
+            correctFollow(terminals.symbols[i]);
         }
     }
 }
@@ -64,23 +76,92 @@ function correctFollow(symbol){
 
     let inputArray;
     let commaCounter = 0;
-    let semiColonCounter = 0;
     for (let i = 0; i < input.value.length; i++) {
         if (input.value[i] === "{" || input.value[i] === "}") {
             input.value[i] = "";
         }
         if(input.value[i] === ",") commaCounter++;
-        if(input.value[i] === ";") semiColonCounter++;
+        if(input.value[i] === ";") commaCounter--;
     }
 
-    if(commaCounter > semiColonCounter) inputArray = input.value.split(", ");
-    else if (commaCounter < semiColonCounter) inputArray = input.value.split("; ");
+    if(commaCounter > 0) inputArray = input.value.split(", ");
+    else if (commaCounter < 0) inputArray = input.value.split("; ");
     else inputArray = input.value.split(" ");
 
-    if(compareArrays(inputArray, follow[symbol])){
+    if(follow.equalsFollow(symbol, inputArray)){
         output.style.color = "green";
     }
     else{
         output.style.color = "red";
+    }
+}
+
+function correctParserTable(fillMode) {
+    let tbody = document.getElementById("parse-table-body");
+    for (let i = 0; i < tbody.rows.length; i++) {
+        let row = tbody.rows[i];
+        for (let j = 0; j < terminals.symbols.length; j++) {
+            row.cells[j + 1].style.backgroundColor = "ghostwhite";
+            //terminals[j] + ":" + row.cells[j + 1].innerHTML
+            let input = row.cells[j + 1].innerHTML;
+
+            let correct = states.collections[i].jumps[terminals.symbols[j]];
+            correct = (correct !== undefined)? "s" + correct : "";
+
+            if(states.collections[i].reduction.length !== 0) {
+                if (follow[states.collections[i].reduction[0]].includes(terminals.symbols[j])) {
+                    correct += "r" + states.collections[i].reduction[1];
+                }
+            }
+
+            if(correct === "" && input.replace(/[\s]/g, "") !== ""){
+                row.cells[j + 1].style.backgroundColor = "red";
+            } else if (correct !== ""){
+                if (input.replace(/[^sSrR1234567890]/g, "").toLowerCase() !== correct){
+                    row.cells[j + 1].style.backgroundColor = "red";
+                } else {
+                    row.cells[j + 1].style.backgroundColor = "green";
+                }
+            }
+            if(fillMode) row.cells[j + 1].innerHTML = correct;
+        }
+
+        let input = row.cells[terminals.symbols.length + 1].innerHTML;
+        let correct = "";
+        if(states.collections[i].reduction.length !== 0) {
+            correct += (states.collections[i].reduction[1] === 0)? "Fertig" : "r" + states.collections[i].reduction[1];
+        }
+        if(correct === "" && input.replace(/[\s]/g, "") !== ""){
+            row.cells[terminals.symbols.length + 1].style.backgroundColor = "red";
+        } else if (correct !== ""){
+            if(correct === "Fertig" && input !== "" && input.replace(/[^1234567890]/g, "") === ""){
+                row.cells[terminals.symbols.length + 1].style.backgroundColor = "green";
+            }
+            else if (input.replace(/[^sSrR1234567890]/g, "").toLowerCase() !== correct){
+                row.cells[terminals.symbols.length + 1].style.backgroundColor = "red";
+            } else {
+                row.cells[terminals.symbols.length + 1].style.backgroundColor = "green";
+            }
+        }
+        if(fillMode) row.cells[terminals.symbols.length + 1].innerHTML = correct;
+
+        for (let j = 1; j < nonTerminals.symbols.length; j++) {
+            row.cells[terminals.symbols.length + j + 1].style.backgroundColor = "ghostwhite";
+            //nonTerminals.symbols[j] + ":" + row.cells[terminals.symbols.length + j + 1].innerHTML
+            let input = row.cells[terminals.symbols.length + j + 1].innerHTML;
+            let correct = states.collections[i].jumps[nonTerminals.symbols[j]];
+            correct = (correct !== undefined)? correct.toString() : "";
+            if(correct === "" && input.replace(/[^\s]/g, "") !== ""){
+                row.cells[terminals.symbols.length + j + 1].style.backgroundColor = "red";
+            } else if (correct !== ""){
+                if (input.replace(/[^1234567890]/g, "") !== correct){
+                    row.cells[terminals.symbols.length + j + 1].style.backgroundColor = "red";
+                } else {
+                    row.cells[terminals.symbols.length + j + 1].style.backgroundColor = "green";
+                }
+            }
+            if(fillMode) row.cells[terminals.symbols.length + j + 1].innerHTML = correct;
+
+        }
     }
 }

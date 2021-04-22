@@ -1,3 +1,7 @@
+function showTables() {
+    document.getElementById("third-row").style.visibility = "visible";
+}
+
 function createStateTable(){
     let div = document.getElementById("state-table-container");
     let table = document.createElement("table");
@@ -30,7 +34,7 @@ function createStateTable(){
             if(i === states.collections.length - 1) stateCell.classList.add("rightCell");
 
             let spanNode = document.createElement("span");
-                spanNode.innerHTML = "I<sub>" + i + "</sub>";
+                spanNode.innerHTML = "I<sub>" + i + "</sub> = " + (states.collections[i].isStart ? "Hülle(Startregel)" : ("Sprung" + "(" + "I<sub>" + states.collections[i].origin + "</sub>; \'" + states.collections[i].symbol + "\')"));
             stateCell.appendChild(spanNode);
         tableHead.appendChild(stateCell);
 
@@ -63,13 +67,13 @@ function createParseTable(){
             emptyCell.classList.add("leftCell");
         let action = document.createElement("td");
             action.appendChild(document.createTextNode("Aktion"));
-            action.colSpan = terminals.length;
+            action.colSpan = terminals.symbols.length + 1;
             action.classList.add("thickBorderCell");
             action.classList.add("topCell");
         firstTableHead.appendChild(action);
         let jump = document.createElement("td");
             jump.appendChild(document.createTextNode("Sprung"));
-            jump.colSpan = nonTerminals.length;
+            jump.colSpan = nonTerminals.symbols.length - 1;
             jump.classList.add("topCell");
             jump.classList.add("rightCell");
         firstTableHead.appendChild(jump);
@@ -82,29 +86,34 @@ function createParseTable(){
             state.classList.add("headerCell");
             state.classList.add("leftCell");
         secondTableHead.appendChild(state);
-        for (let i = 0; i < terminals.length; i++) {
+        for (let i = 0; i < terminals.symbols.length; i++) {
             let nonTerminalCell = document.createElement("td");
-                nonTerminalCell.appendChild(document.createTextNode(terminals[i]));
-                if (i === terminals.length - 1) nonTerminalCell.classList.add("thickBorderCell");
+                nonTerminalCell.appendChild(document.createTextNode(terminals.symbols[i]));
                 nonTerminalCell.classList.add("headerCell");
             secondTableHead.appendChild(nonTerminalCell);
         }
-        for (let i = 0; i < nonTerminals.length; i++) {
+        let nonTerminalCell = document.createElement("td");
+            nonTerminalCell.appendChild(document.createTextNode("$"));
+            nonTerminalCell.classList.add("thickBorderCell");
+            nonTerminalCell.classList.add("headerCell");
+        secondTableHead.appendChild(nonTerminalCell);
+        for (let i = 1; i < nonTerminals.symbols.length; i++) {
             let terminalCell = document.createElement("td");
-                terminalCell.appendChild(document.createTextNode(nonTerminals[i]));
-                if(i === nonTerminals.length - 1) terminalCell.classList.add("rightCell");
+                terminalCell.appendChild(document.createTextNode(nonTerminals.symbols[i]));
+                if(i === nonTerminals.symbols.length - 1) terminalCell.classList.add("rightCell");
                 terminalCell.classList.add("headerCell");
             secondTableHead.appendChild(terminalCell);
         }
     table.appendChild(secondTableHead);
 
     let tableBody = document.createElement("tbody");
+        tableBody.id = "parse-table-body";
         for (let i = 0; i < states.collections.length; i++) {
             let tableRow = document.createElement("tr");
-                for (let j = 0; j <= terminals.length + nonTerminals.length; j++) {
+                for (let j = 0; j <= terminals.symbols.length + nonTerminals.symbols.length; j++) {
                     let cell = document.createElement("td");
-                        if(j === 0 || j === terminals.length) cell.classList.add("thickBorderCell");
-                        if(j === terminals.length + nonTerminals.length) cell.classList.add("rightCell");
+                        if(j === 0 || j === terminals.symbols.length) cell.classList.add("thickBorderCell");
+                        if(j === terminals.symbols.length + nonTerminals.symbols.length) cell.classList.add("rightCell");
                         if(i === states.collections.length - 1) cell.classList.add("bottomCell");
                         if(j === 0){
                             cell.classList.add("leftCell");
