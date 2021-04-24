@@ -1,12 +1,7 @@
 class FollowSet {
-    constructor(terminalSymbols, nonTerminalSymbols) {
-        if(terminalSymbols === undefined) terminalSymbols = new Terminals();
-        if(nonTerminalSymbols === undefined) nonTerminalSymbols = new NonTerminals();
-        for(let i = 0; i < terminalSymbols.symbols.length; i++){
-            this[terminalSymbols.symbols[i]] = [];
-        }
-        for(let i = 0; i < nonTerminalSymbols.symbols.length; i++){
-            this[nonTerminalSymbols.symbols[i]] = [];
+    constructor() {
+        for(let i = 0; i < nonTerminals.symbols.length; i++){
+            this[nonTerminals.symbols[i]] = [];
         }
     }
 
@@ -43,7 +38,7 @@ class FollowSet {
 /**
  * This function generates the follow sets of all given symbols. It has to be called after first is calculated.
  */
-function generateFollow(terminals, nonTerminals, productionRules){
+function generateFollow(){
     let changed = true;
     let counter = 0;
 
@@ -53,7 +48,7 @@ function generateFollow(terminals, nonTerminals, productionRules){
         for (let i = 0; i < nonTerminals.symbols.length; i++) {
             log("   Going through production rules " + productionRules.of(nonTerminals.symbols[i]) + " of " + nonTerminals.symbols[i]);
             if(nonTerminals.symbols[i] === STARTSYMBOL){
-                log("   Start Symbol. Follow is $");
+                log("   Start Symbol. Follow is $ " + nonTerminals.symbols[i]);
                 if(follow.appendToFollow(nonTerminals.symbols[i], "$")){
                     changed = true;
                     continue;
@@ -63,13 +58,17 @@ function generateFollow(terminals, nonTerminals, productionRules){
                 log("       Going through production rule " + productionRules.of(nonTerminals.symbols[i])[j] + " of " + nonTerminals.symbols[i]);
                     for (let k = 0; k < productionRules.of(nonTerminals.symbols[i])[j].length - 1; k++) {
                         log("               Checking " + productionRules.of(nonTerminals.symbols[i])[j][k]);
+                        if(!isNT(productionRules.of(nonTerminals.symbols[i])[j][k])) {
+                            log("               Checking " + productionRules.of(nonTerminals.symbols[i])[j][k]+ " is not NT");
+                            continue;
+                        }
                         let firstSet = first[productionRules.of(nonTerminals.symbols[i])[j][k+1]];
                         log("                   First of next symbol: " + firstSet);
                         for (let l = 0; l < firstSet.length; l++) {
                             if(follow.appendToFollow(productionRules.of(nonTerminals.symbols[i])[j][k], firstSet[l])){
                                 changed = true;
                                 log("                       Changed was set to true because of first of next");
-                                log("                       " + firstSet[l] + " added to follow of ");
+                                log("                       " + firstSet[l] + " added to follow of " + productionRules.of(nonTerminals.symbols[i])[j][k]);
                                 log(follow[productionRules.of(nonTerminals.symbols[i])[j][k]]);
                             }
                         }
@@ -88,6 +87,10 @@ function generateFollow(terminals, nonTerminals, productionRules){
                     }
                 log("           Checking last element " + productionRules.of(nonTerminals.symbols[i])[j][productionRules.of(nonTerminals.symbols[i])[j].length - 1]);
                 for (let k = 0; k < follow[nonTerminals.symbols[i]].length; k++) {
+                    if(!isNT(productionRules.of(nonTerminals.symbols[i])[j][productionRules.of(nonTerminals.symbols[i])[j].length - 1])) {
+                        log("                   last element not nt");
+                        continue;
+                    }
                     log("           Follow of non terminal " + nonTerminals.symbols[i] + " to be added: " + follow[nonTerminals.symbols[i]][k]);
                     if(follow.appendToFollow(productionRules.of(nonTerminals.symbols[i])[j][productionRules.of(nonTerminals.symbols[i])[j].length - 1], follow[nonTerminals.symbols[i]][k])){
                         changed = true;

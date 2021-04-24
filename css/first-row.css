@@ -30,6 +30,7 @@
 }
 
 .card .content {
+    margin-top: 10px;
     width: 95%;
     margin-left: 10px;
     margin-right: 10px;
@@ -37,5 +38,6 @@
 }
 
 .card .content > * {
+    margin: 0;
     line-height: 1.5;
 }

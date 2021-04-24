@@ -1,36 +1,25 @@
 function parseGrammar() {
-
-
-      //  test();
-    hideAll();
-    let input = getInput();
-    //terminals = input[0].sort();
-    log("Terminals: " + terminals.symbols);
-    //nonTerminals = input[1].sort();
-    log("NTS: " + nonTerminals.symbols);
-    log("Production Rules:");
-    productionRules = input[2];
-    log(productionRules);
-
+    hideFirst();
     try {
-        first = new FirstSet(terminals, nonTerminals);
-        follow = new FollowSet(terminals, nonTerminals);
-        console.time("First");
-        generateFirsts(terminals, topologicalSorting(nonTerminals, productionRules), productionRules);
-        //generateFirsts(terminals, nonTerminals, productionRules);
-        console.timeEnd("First");
-        console.time("Follow");
-        generateFollow(terminals, nonTerminals, productionRules);
-        console.timeEnd("Follow");
+        getStartproduction();
+        getInput();
+        log("Terminals: " + terminals.symbols);
+        log("NTS: " + nonTerminals.symbols);
+        log("Production Rules:");
+        log(productionRules);
+
+
+        first = new FirstSet();
+        generateFirsts();
         showFirst();
-        showFollow();
+
+        follow = new FollowSet();
+        generateFollow();
+
         generateStatesAndCalcJumps();
         calcReductions();
-        console.log(states);
-        createStateTable();
-        createParseTable();
-        showTables();
+
     } catch (e) {
-         document.getElementById("parse-grammar-button").style.backgroundColor = "red";
+          document.getElementById("parse-grammar-button").style.backgroundColor = "red";
     }
 }

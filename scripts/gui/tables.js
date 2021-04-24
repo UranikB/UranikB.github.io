@@ -1,5 +1,10 @@
 function showTables() {
+    createStateTable();
+    createParseTable();
     document.getElementById("third-row").style.visibility = "visible";
+    let popup = document.getElementById("help-" + step);
+    popup.classList.remove("show");
+    step++;
 }
 
 function createStateTable(){

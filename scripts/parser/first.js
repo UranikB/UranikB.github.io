@@ -1,12 +1,10 @@
 class FirstSet {
-    constructor(terminalSymbols, nonTerminalSymbols) {
-        if(terminalSymbols === undefined) terminalSymbols = new Terminals();
-        if(nonTerminalSymbols === undefined) nonTerminalSymbols = new NonTerminals();
-        for(let i = 0; i < terminalSymbols.symbols.length; i++){
-            this[terminalSymbols.symbols[i]] = [terminalSymbols.symbols[i]];
+    constructor() {
+        for(let i = 0; i < terminals.symbols.length; i++){
+            this[terminals.symbols[i]] = [terminals.symbols[i]];
         }
-        for(let i = 0; i < nonTerminalSymbols.symbols.length; i++){
-            this[nonTerminalSymbols.symbols[i]] = [];
+        for(let i = 0; i < nonTerminals.symbols.length; i++){
+            this[nonTerminals.symbols[i]] = [];
         }
     }
 
@@ -17,8 +15,6 @@ class FirstSet {
         }
         return false;
     }
-
-
 
     equalsFirst(correctSymbol, inputSet){
         let equal = true;
@@ -42,24 +38,25 @@ class FirstSet {
 
 
 /**
- * @param terminalSymbols: Array of all terminal-symbols represented by uppercase letters
+ * @param terminals: Array of all terminal-symbols represented by uppercase letters
  * @param nonTerminalSymbols: Array of all nonterminal-symbols represented as uppercase letters
  * @param productionRules: Map of nonterminal-symbols (keys) to array of all production rules of this NT (value)
  * These production rules are stored as strings
  */
-function generateFirsts(terminalSymbols, nonTerminalSymbols, productionRules) {
+function generateFirsts() {
+    let sortedNonTerminals = topologicalSorting();
     let changed = true;
     let i = 1;
     while(changed){
         log(i + ". iteration");
         changed = false;
-        for(let i = 0; i < nonTerminalSymbols.symbols.length; i++){
-            log("Next symbol: " + nonTerminalSymbols.symbols[i]);
-            if(generateFirstOfNT(nonTerminalSymbols.symbols[i], productionRules)){
+        for(let i = 0; i < sortedNonTerminals.symbols.length; i++){
+            log("Next symbol: " + sortedNonTerminals.symbols[i]);
+            if(generateFirstOfNT(sortedNonTerminals.symbols[i])){
                 changed = true;
-                log(nonTerminalSymbols.symbols[i] + ":    Changes detected");
+                log(sortedNonTerminals.symbols[i] + ":    Changes detected");
             } else {
-                log(nonTerminalSymbols.symbols[i] + ":    No changes detected");
+                log(sortedNonTerminals.symbols[i] + ":    No changes detected");
             }
         }
         if(changed) log("Another iteration needed because of changes");
@@ -74,7 +71,7 @@ function generateFirsts(terminalSymbols, nonTerminalSymbols, productionRules) {
  * @param productionRules: Map of nonterminal-symbols (keys) to array of all production rules of this NT (value)
  * These production rules are stored as strings
  */
-function generateFirstOfNT(nonTerminal, productionRules) {
+function generateFirstOfNT(nonTerminal) {
     let changed = false;
     log(nonTerminal + ":    Rules: " + productionRules.of(nonTerminal));
     for(let i = 0; i < productionRules.of(nonTerminal).length; i++){

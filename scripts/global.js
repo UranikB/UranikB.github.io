@@ -14,3 +14,5 @@ let first;
 let follow;
 
 let states;
+
+let step = 1;

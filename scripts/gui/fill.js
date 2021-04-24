@@ -26,21 +26,20 @@ function getDistinctNumberOfTSGrammar(){
 
 function getMathGrammar(){
     EMPTY = '-';
-    STARTPRODUCTION = ["Expr"];
-    return{"S'": ['Expr'], Expr: ['Expr + Term', 'Term'], Term: ['Term * Faktor', 'Faktor'], Faktor: ['( Expr )', 'Konst']}
+    return {"S'": ['Expr'], Expr: ['Expr + Term', 'Term'], Term: ['Term * Faktor', 'Faktor'], Faktor: ['( Expr )', 'Konst']}
 }
 
 function getSmallGrammar(){
-    EMPTY = '-'
+    EMPTY = '-';
     return{"S'": ['S'], S: ['A + S | A'], A: ['a']}
 }
 
 function getFirstExamGrammar(){
-    EMPTY = '-'
+    EMPTY = '-';
     return{"S'": ['S'], S: ['a | ( L )'], L: ['S | L . S']}
 }
 
 function getSecondExamGrammar(){
-    EMPTY = '-'
+    EMPTY = '-';
     return{"S'": ['S'], S: ['N'], N: ['a', 'N b a']}
 }

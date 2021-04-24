@@ -1,10 +1,11 @@
 function correctAllFirsts(){
+    hideFollow();
     for (let i = 0; i < nonTerminals.symbols.length; i++) {
         if(nonTerminals.symbols[i] !== STARTSYMBOL && nonTerminals.symbols[i] !== EMPTY){
             correctFirst(nonTerminals.symbols[i]);
         }
-
     }
+    showFollow();
 }
 
 function correctFirst(nonTerminalSymbol){
@@ -37,30 +38,28 @@ function correctFirst(nonTerminalSymbol){
         if(input.value[i] === ";") commaCounter--;
     }
 
-    if(commaCounter > 0) inputArray = input.value.split(", ");
-    else if (commaCounter < 0) inputArray = input.value.split("; ");
+    if(commaCounter !== 0) inputArray = input.value.replace(/\ /g, "");
     else inputArray = input.value.split(" ");
+    if(commaCounter > 0) inputArray = inputArray.split(",");
+    else if (commaCounter < 0) inputArray = inputArray.split(";");
 
+    output.style.visibility = "visible";
     if(first.equalsFirst(nonTerminalSymbol, inputArray)){
         output.style.color = "green";
     }
     else{
         output.style.color = "red";
     }
-
 }
 
 function correctAllFollows(){
+    hideThirdRow();
     for (let i = 0; i < nonTerminals.symbols.length; i++) {
         if(nonTerminals.symbols[i] !== STARTSYMBOL && nonTerminals.symbols[i] !== EMPTY){
             correctFollow(nonTerminals.symbols[i]);
         }
     }
-    for (let i = 0; i < terminals.symbols.length; i++) {
-        if(terminals.symbols[i] !== STARTSYMBOL && terminals.symbols[i] !== EMPTY){
-            correctFollow(terminals.symbols[i]);
-        }
-    }
+    showTables();
 }
 
 function correctFollow(symbol){
@@ -84,10 +83,22 @@ function correctFollow(symbol){
         if(input.value[i] === ";") commaCounter--;
     }
 
-    if(commaCounter > 0) inputArray = input.value.split(", ");
-    else if (commaCounter < 0) inputArray = input.value.split("; ");
+    if(commaCounter !== 0) inputArray = input.value.replace(/\ /g, "");
     else inputArray = input.value.split(" ");
+    if(commaCounter > 0) inputArray = inputArray.split(",");
+    else if (commaCounter < 0) inputArray = inputArray.split(";");
 
+    for (let i = 0; i < inputArray.length; i++) {
+        let inputEntry = inputArray[i].split(" ");
+        for (let j = 0; j < inputEntry.length; j++) {
+            if (inputEntry[j] !== ""){
+                inputArray[i] = inputEntry[j];
+                break;
+            }
+        }
+    }
+
+    output.style.visibility = "visible";
     if(follow.equalsFollow(symbol, inputArray)){
         output.style.color = "green";
     }
